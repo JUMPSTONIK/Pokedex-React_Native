@@ -2,12 +2,12 @@ import { View, Text, SafeAreaView } from "react-native";
 import React, { useState, useEffect } from "react";
 import { getPokemonsApi, getPokemonDetailsByUrlApi } from "../api/pokemon";
 import PokemonList from "../components/PokemonList";
-import Pokemons from "./Pokemon";
 import { PokemonTypes } from "../utils/types";
 
 export default function Pokedex() {
   const [pokemons, setPokemons] = useState<PokemonTypes[]>([]);
   const [nextUrl, setNextUrl] = useState<null | string>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     (async () => {
@@ -17,8 +17,10 @@ export default function Pokedex() {
 
   const loadPokemons = async () => {
     try {
+      setLoading(true);
       const response = await getPokemonsApi(nextUrl);
       setNextUrl(response.next);
+
       const pokemonsArray: PokemonTypes[] = [];
       for await (const pokemon of response.results) {
         const pokemonDetails = await getPokemonDetailsByUrlApi(pokemon.url);
@@ -32,10 +34,12 @@ export default function Pokedex() {
             pokemonDetails.sprites.other["official-artwork"].front_default,
         });
       }
+
       setPokemons([...pokemons, ...pokemonsArray]);
-      // console.log(response);
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -45,6 +49,7 @@ export default function Pokedex() {
         pokemons={pokemons}
         loadPokemons={loadPokemons}
         isNext={nextUrl}
+        isLoading={loading}
       />
     </SafeAreaView>
   );

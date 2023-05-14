@@ -8,27 +8,29 @@ import React from "react";
 import PokemonCard from "./PokemonCard";
 
 export default function PokemonList(props: any) {
-  const { pokemons, loadPokemons, isNext } = props;
+  const { pokemons, loadPokemons, isNext, isLoading } = props;
 
-  const loadmore = () => {
+  const laodMore = () => {
     loadPokemons();
   };
+
   return (
     <FlatList
       data={pokemons}
       numColumns={2}
       showsVerticalScrollIndicator={false}
-      keyExtractor={(pokemon) => pokemon.id}
+      keyExtractor={(pokemon) => String(pokemon.id)}
       renderItem={({ item }) => <PokemonCard pokemon={item} />}
-      contentContainerStyle={styles.FlatListContentContainer}
-      onEndReached={isNext && loadmore}
+      contentContainerStyle={styles.flatListContentContainer}
+      onEndReached={!isLoading && isNext && laodMore}
       onEndReachedThreshold={0.1}
       ListFooterComponent={
+        isLoading &&
         isNext && (
           <ActivityIndicator
-            size={"large"}
+            size="large"
             style={styles.spinner}
-            color={"#AEAEAE"}
+            color="#AEAEAE"
           />
         )
       }
@@ -37,9 +39,9 @@ export default function PokemonList(props: any) {
 }
 
 const styles = StyleSheet.create({
-  FlatListContentContainer: {
+  flatListContentContainer: {
     paddingHorizontal: 5,
-    paddingTop: Platform.OS === "android" ? 30 : 0,
+    marginTop: Platform.OS === "android" ? 30 : 0,
   },
   spinner: {
     marginTop: 20,
