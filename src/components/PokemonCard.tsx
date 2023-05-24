@@ -5,24 +5,34 @@ import {
   Image,
   TouchableWithoutFeedback,
 } from "react-native";
-import React from "react";
-import { PokemonTypes } from "../utils/types";
+import React, { FC } from "react";
+import {
+  PokedexStackParamList,
+  PokemonTypes,
+  PokemonsTypes,
+} from "../utils/types";
 import { capitalize } from "lodash";
 import { getColorByPokemonType } from "../utils/getColorbyPokemonType";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
-interface pokemon {
-  pokemon: PokemonTypes;
+interface pokemonCardTypes {
+  pokemon: PokemonsTypes;
 }
 
-const PokemonCard = (props: pokemon) => {
+const PokemonCard: FC<pokemonCardTypes> = (props: pokemonCardTypes) => {
   const { pokemon } = props;
+
+  const navigation =
+    useNavigation<NativeStackNavigationProp<PokedexStackParamList>>();
+
   const bgStyles = {
     backgroundColor: getColorByPokemonType(pokemon.type),
     ...styles.bgStyles,
   };
 
   const goToPokemon = () => {
-    console.log(`Vamos al pokemon: ${pokemon.name}`);
+    navigation.navigate("Pokemon", { id: pokemon.id });
   };
   return (
     <TouchableWithoutFeedback onPress={goToPokemon}>
